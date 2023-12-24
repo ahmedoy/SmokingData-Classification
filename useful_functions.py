@@ -61,8 +61,7 @@ def get_tranformations(feature):
     return sqaure_root_transformed_data, log_transformed_data, box_cox_transformed_data, yeo_johnson_transformed_data
 
 
-def get_normalized_train():
-    features = features_train
+def get_normalized(features):
     sqaure_root_transformed_data, log_transformed_data, box_cox_transformed_data, yeo_johnson_transformed_data = get_tranformations(features[0])
     #scaling the data using standard scaler
     scaler = StandardScaler()
@@ -109,12 +108,15 @@ def get_normalized_train():
 
     return scaled_hemoglobin_train, scaled_fasting_blood_sugar_train, scaled_LDL_train, scaled_height_train, scaled_weight, scaled_serum_creatinine, scaled_Gtp
 
+def get_normalized_train():
+    return get_normalized(features_train)
+
 
 def get_normalized_test():
-    return get_normalized_train(features_test)
+    return get_normalized(features_test)
 
 def get_normalized_val():
-    return get_normalized_train(features_val)
+    return get_normalized(features_val)
 
 
 
