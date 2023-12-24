@@ -21,22 +21,38 @@ transformed_df.columns = ['PC1', 'PC2', 'PC3', 'smoking']
 
 sampled_df = transformed_df.sample(frac=0.01, random_state=42)
 
-
-
-# Create a 3D scatter plot
+# Separate data by 'smoking' class
+classes = sampled_df['smoking'].unique()
 fig = plt.figure(figsize=(10, 8))
 ax = fig.add_subplot(111, projection='3d')
 
-# Scatter plot with color representing 'smoking' labels
-scatter = ax.scatter(sampled_df['PC1'], sampled_df['PC2'], sampled_df['PC3'], c=sampled_df['smoking'], cmap='viridis')
+for label in classes:
+    class_data = sampled_df[sampled_df['smoking'] == label][['PC1', 'PC2', 'PC3']]
+    
+    # Apply K-means clustering
+    kmeans = KMeans(n_clusters=20, random_state=42)
+    class_data['cluster'] = kmeans.fit_predict(class_data)
+    
 
-# Legend for 'smoking' labels
-legend = ax.legend(*scatter.legend_elements(), title='Smoking')
-ax.add_artist(legend)
+    if label == 1:
+        color = 'red'
+    else:
+        color = 'blue'
+
+    # Plot centroids
+    centroids = kmeans.cluster_centers_
+    ax.scatter(
+        centroids[:, 0],  # x coordinate of centroids
+        centroids[:, 1],  # y coordinate of centroids
+        centroids[:, 2],  # z coordinate of centroids
+        c=color,
+        label='Centroids'
+    )
 
 # Set labels and title
 ax.set_xlabel('PC1')
 ax.set_ylabel('PC2')
 ax.set_zlabel('PC3')
-ax.set_title('3D Scatter Plot of Principal Components with Smoking Labels')
+ax.set_title('3D Scatter Plot of Principal Components with K-means Clusters and Centroids')
+plt.legend(labels=[f'Non-Smokers',  f"Smokers"])
 plt.show()
